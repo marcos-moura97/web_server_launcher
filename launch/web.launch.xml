@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Launch file ROS2 -->
+<launch>
+    <!-- Launching rosbridge_server websocket -->
+    <include file="$(find-pkg-share rosbridge_server)/launch/rosbridge_websocket_launch.xml">
+        <arg name="port" value="3033" />
+        <arg name="websocket_external_port" value="20001" />
+    </include>
+
+    <!-- Launching turtlebot gazebo simulation -->
+    <executable cmd="ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py" cwd="/home" launch-prefix="time" output="screen"/>
+
+    <!-- Initializing web_video_server node -->
+    <node name="web_video_server" pkg="web_video_server" exec="web_video_server" output="screen">
+        <param name="port" value="11315" />
+    </node>
+
+    <!-- Initializing HTTP Server on frontend -->
+    <executable cmd="python3 -m http.server 7000" cwd="$(find-pkg-share web_server_launcher)/frontend/simple_vue_example" launch-prefix="time" output="screen"/>
+</launch>

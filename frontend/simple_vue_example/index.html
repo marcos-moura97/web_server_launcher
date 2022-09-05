@@ -1,0 +1,115 @@
+<html>
+
+<head>
+    <title>Turtlebot3 Monitor!</title>
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <!-- ROS stuff -->
+    <script type="text/javascript"
+        src="https://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
+    <script type="text/javascript" src="https://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
+    <!-- Camera Stream -->
+    <script type="text/javascript" src="mjpegcanvas.min.js"></script>
+    <!-- Vuejs -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="modal.css">
+</head>
+
+<body>
+    <div id="app" class="container-fluid">
+        <div class="row">
+            <div class="col-3 text-center">
+                <div class="card mt-2">
+                    <div class="card-body">
+                        <h3>Connection status</h3>
+                        <p class="text-danger" v-if="!connected">Not connected!</p>
+                        <p class="text-success" v-if="connected">Connected!</p>
+                        <label>ROSBridge address</label>
+                        <br>
+                        <input type="text" v-model="rosbridge_address" />
+                        <br><br>
+                        <button :disabled="loading" class="btn btn-danger" @click="disconnect"
+                            v-if="connected">Disconnect!</button>
+                        <button :disabled="loading" class="btn btn-success" @click="connect" v-else>Connect!</button>
+                    </div>
+                </div>                
+            </div>
+            <div class="col-9">
+                <div class="row">
+                    <div class="col-4">
+                        <div class="card mt-2">
+                            <div class="card-header">
+                                <div class="row">
+                                    <div class="col-9">
+                                        <h4>Camera</h4>
+                                    </div>
+                                    <div class="col-3">
+                                        <button class="btn btn-primary" :disabled="!connected"
+                                            @click="openModalCamera">Show</button></div>
+                                </div>
+                            </div>
+                            <div class="card-body text-center">
+                                <div class="col-md-6 col-sm-6 text-center">
+                                    <div id="divCamera"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="card mt-2"> 
+                            <div class="card-header">
+                                <h4>Joystick</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="row text-center">
+                                    <div class="col-4">
+                                        <div id="dragstartzone" @mousedown="startDrag" @mousemove="doDrag">
+                                        </div>
+                                        <div id="dragCircle" :style="dragCircleStyle"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="card mt-2">
+                            <div class="card-header">
+                                <h4>Logs</h5>
+                            </div>
+                            <div class="card-body">
+                                <p v-for="log in logs">{{ log }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <Transition name="modal">
+            <div v-bind:class="showCamera ? 'modal-mask' : 'notVisible'">
+                <div class="modal-wrapper">
+                    <div class="modal-container">
+                        <div class="modal-header">
+                            <h5 class="text-center">Camera</h5>
+                        </div>
+                        <div class="modal-body">
+                            <slot name="body">
+                                <div id="divCameraModal"></div>
+                            </slot>
+                        </div>
+                        <div class="modal-footer">
+                            <slot name="footer">
+                                <button class="mt-2 btn btn-primary" @click="closeModalCamera">Hide</button>
+                            </slot>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </Transition>
+    </div>
+    <script type="text/javascript" src="main.js" defer>
+    </script>
+</body>
+
+</html>
